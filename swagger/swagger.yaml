@@ -1,0 +1,74 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+definitions:
+  GoaDiceroll:
+    description: Roll response message (default view)
+    example:
+      text: Eos maxime culpa voluptatem perspiciatis voluptas labore.
+    properties:
+      text:
+        description: Roll response text
+        example: Eos maxime culpa voluptatem perspiciatis voluptas labore.
+        type: string
+    required:
+    - text
+    title: 'Mediatype identifier: application/vnd.goa.diceroll+json; view=default'
+    type: object
+  RollDicePayload:
+    example:
+      text: Vitae quis placeat cum.
+    properties:
+      text:
+        description: Roll response text
+        example: Vitae quis placeat cum.
+        type: string
+    required:
+    - text
+    title: RollDicePayload
+    type: object
+host: localhost:8080
+info:
+  description: A Chatbot for rolling dice
+  title: 'Dice Roll Chatbot '
+  version: ""
+paths:
+  /:
+    post:
+      description: Roll the dice
+      operationId: dice#roll
+      parameters:
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/RollDicePayload'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GoaDiceroll'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: roll dice
+      tags:
+      - dice
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  NotFound:
+    description: Not Found
+  OK:
+    description: OK
+    schema:
+      $ref: '#/definitions/GoaDiceroll'
+schemes:
+- http
+swagger: "2.0"
