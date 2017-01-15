@@ -2,10 +2,17 @@
 	"ImportPath": "dicebot",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v77",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/armon/go-metrics",
 			"Rev": "97c69685293dce4c0a2d0b19535179bbc976e4d2"
+		},
+		{
+			"ImportPath": "github.com/dimfeld/httppath",
+			"Rev": "c8e499c3ef3c3e272ed8bdcc1ccf39f73c88debc"
 		},
 		{
 			"ImportPath": "github.com/dimfeld/httptreemux",
@@ -23,6 +30,26 @@
 			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
 		},
 		{
+			"ImportPath": "github.com/goadesign/goa/design",
+			"Comment": "v1.0.0-154-g366c7ec",
+			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
+		},
+		{
+			"ImportPath": "github.com/goadesign/goa/design/apidsl",
+			"Comment": "v1.0.0-154-g366c7ec",
+			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
+		},
+		{
+			"ImportPath": "github.com/goadesign/goa/dslengine",
+			"Comment": "v1.0.0-154-g366c7ec",
+			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
+		},
+		{
+			"ImportPath": "github.com/goadesign/goa/goatest",
+			"Comment": "v1.0.0-154-g366c7ec",
+			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
+		},
+		{
 			"ImportPath": "github.com/goadesign/goa/middleware",
 			"Comment": "v1.0.0-154-g366c7ec",
 			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
@@ -33,9 +60,29 @@
 			"Rev": "366c7ec817bdb3e71e23a809b978c18b581583b5"
 		},
 		{
+			"ImportPath": "github.com/inconshreveable/mousetrap",
+			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+		},
+		{
+			"ImportPath": "github.com/manveru/faker",
+			"Rev": "717f7cf83fb78669bfab612749c2e8ff63d5be11"
+		},
+		{
 			"ImportPath": "github.com/satori/go.uuid",
 			"Comment": "v1.1.0-6-gb061729",
 			"Rev": "b061729afc07e77a8aa4fad0a2fd840958f1942a"
+		},
+		{
+			"ImportPath": "github.com/spf13/cobra",
+			"Rev": "1dd5ff2e11b6dca62fdcb275eb804b94607d8b06"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "25f8b5b07aece3207895bf19f7ab517eb3b22a40"
+		},
+		{
+			"ImportPath": "github.com/zach-klippenstein/goregen",
+			"Rev": "795b5e3961ea1912fde60af417ad85e86acc0d6a"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
