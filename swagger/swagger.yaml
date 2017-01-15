@@ -57,6 +57,28 @@ paths:
       summary: roll dice
       tags:
       - dice
+  /{rollPattern}:
+    get:
+      description: GET landing page
+      operationId: dice#index
+      parameters:
+      - description: Roll Pattern
+        in: path
+        name: rollPattern
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/GoaDiceroll'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: index dice
+      tags:
+      - dice
 produces:
 - application/json
 - application/xml

@@ -20,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/net/context"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -27,6 +28,13 @@ import (
 )
 
 type (
+	// IndexDiceCommand is the command line data structure for the index action of dice
+	IndexDiceCommand struct {
+		// Roll Pattern
+		RollPattern string
+		PrettyPrint bool
+	}
+
 	// RollDiceCommand is the command line data structure for the roll action of dice
 	RollDiceCommand struct {
 		Payload     string
@@ -39,10 +47,24 @@ type (
 func RegisterCommands(app *cobra.Command, c *client.Client) {
 	var command, sub *cobra.Command
 	command = &cobra.Command{
+		Use:   "index",
+		Short: `GET landing page`,
+	}
+	tmp1 := new(IndexDiceCommand)
+	sub = &cobra.Command{
+		Use:   `dice ["/ROLLPATTERN"]`,
+		Short: ``,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
+	}
+	tmp1.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp1.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
 		Use:   "roll",
 		Short: `Roll the dice`,
 	}
-	tmp1 := new(RollDiceCommand)
+	tmp2 := new(RollDiceCommand)
 	sub = &cobra.Command{
 		Use:   `dice ["/"]`,
 		Short: ``,
@@ -53,10 +75,10 @@ Payload example:
 {
    "text": "Vitae quis placeat cum."
 }`,
-		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
-	tmp1.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp1.PrettyPrint, "pp", false, "Pretty print response body")
+	tmp2.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 }
@@ -212,6 +234,32 @@ func boolArray(ins []string) ([]bool, error) {
 		vals = append(vals, *val)
 	}
 	return vals, nil
+}
+
+// Run makes the HTTP request corresponding to the IndexDiceCommand command.
+func (cmd *IndexDiceCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = fmt.Sprintf("/%v", url.QueryEscape(cmd.RollPattern))
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.IndexDice(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *IndexDiceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var rollPattern string
+	cc.Flags().StringVar(&cmd.RollPattern, "rollPattern", rollPattern, `Roll Pattern`)
 }
 
 // Run makes the HTTP request corresponding to the RollDiceCommand command.

@@ -18,6 +18,36 @@ import (
 	"net/url"
 )
 
+// IndexDicePath computes a request path to the index action of dice.
+func IndexDicePath(rollPattern string) string {
+	param0 := rollPattern
+
+	return fmt.Sprintf("/%s", param0)
+}
+
+// GET landing page
+func (c *Client) IndexDice(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewIndexDiceRequest(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	return c.Client.Do(ctx, req)
+}
+
+// NewIndexDiceRequest create the request corresponding to the index action endpoint of the dice resource.
+func (c *Client) NewIndexDiceRequest(ctx context.Context, path string) (*http.Request, error) {
+	scheme := c.Scheme
+	if scheme == "" {
+		scheme = "http"
+	}
+	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
 // RollDicePayload is the dice roll action payload.
 type RollDicePayload struct {
 	// Roll response text

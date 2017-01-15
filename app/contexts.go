@@ -15,6 +15,42 @@ import (
 	"golang.org/x/net/context"
 )
 
+// IndexDiceContext provides the dice index action context.
+type IndexDiceContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	RollPattern string
+}
+
+// NewIndexDiceContext parses the incoming request URL and body, performs validations and creates the
+// context used by the dice controller index action.
+func NewIndexDiceContext(ctx context.Context, service *goa.Service) (*IndexDiceContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	rctx := IndexDiceContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramRollPattern := req.Params["rollPattern"]
+	if len(paramRollPattern) > 0 {
+		rawRollPattern := paramRollPattern[0]
+		rctx.RollPattern = rawRollPattern
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *IndexDiceContext) OK(r *GoaDiceroll) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.diceroll+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *IndexDiceContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // RollDiceContext provides the dice roll action context.
 type RollDiceContext struct {
 	context.Context

@@ -34,6 +34,7 @@ func initService(service *goa.Service) {
 // DiceController is the controller interface for the Dice actions.
 type DiceController interface {
 	goa.Muxer
+	Index(*IndexDiceContext) error
 	Roll(*RollDiceContext) error
 }
 
@@ -41,6 +42,21 @@ type DiceController interface {
 func MountDiceController(service *goa.Service, ctrl DiceController) {
 	initService(service)
 	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewIndexDiceContext(ctx, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Index(rctx)
+	}
+	service.Mux.Handle("GET", "/:rollPattern", ctrl.MuxHandler("Index", h, nil))
+	service.LogInfo("mount", "ctrl", "Dice", "action", "Index", "route", "GET /:rollPattern")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
