@@ -23,6 +23,7 @@ var _ = Resource("dice", func() {
 			Param("rollPattern", String, "Roll Pattern")
 		})
 		Response(OK)
+		Response(BadRequest, ErrorMedia)
 		Response(NotFound)
 	})
 
@@ -34,6 +35,7 @@ var _ = Resource("dice", func() {
 			Required("text")
 		})
 		Response(OK)
+		Response(BadRequest, ErrorMedia)
 		Response(NotFound)
 	})
 })

@@ -45,6 +45,12 @@ func (ctx *IndexDiceContext) OK(r *GoaDiceroll) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *IndexDiceContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
 // NotFound sends a HTTP response with status code 404.
 func (ctx *IndexDiceContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
@@ -111,6 +117,12 @@ func (payload *RollDicePayload) Validate() (err error) {
 func (ctx *RollDiceContext) OK(r *GoaDiceroll) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.diceroll+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *RollDiceContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.

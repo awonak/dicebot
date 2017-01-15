@@ -22,7 +22,10 @@ func NewDiceController(service *goa.Service) *DiceController {
 func (c *DiceController) Index(ctx *app.IndexDiceContext) error {
 	// Get the dice roll pattern from the request context
 	pattern := ctx.RollPattern
-	res := getDiceRollResponse(pattern)
+	res, err := getDiceRollResponse(pattern)
+	if err != nil {
+		return ctx.BadRequest(goa.ErrBadRequest(err))
+	}
 	return ctx.OK(res)
 }
 
@@ -30,18 +33,25 @@ func (c *DiceController) Index(ctx *app.IndexDiceContext) error {
 func (c *DiceController) Roll(ctx *app.RollDiceContext) error {
 	// Get the dice roll pattern from the request context
 	pattern := ctx.Payload.Text
-	res := getDiceRollResponse(pattern)
+	res, err := getDiceRollResponse(pattern)
+	if err != nil {
+		return ctx.BadRequest(goa.ErrBadRequest(err))
+	}
 	return ctx.OK(res)
 }
 
 // getDiceRollResponse takes a pattern, creates a DiceRoll and formulates a
 // GoaDiceroll response
-func getDiceRollResponse(pattern string) *app.GoaDiceroll {
-	d, _ := dice.NewDiceRoll(pattern)
+func getDiceRollResponse(pattern string) (*app.GoaDiceroll, error) {
+	d, err := dice.NewDiceRoll(pattern)
+
+	if err != nil {
+		return nil, err
+	}
 
 	res := &app.GoaDiceroll{
 		Text: fmt.Sprintf("Rolling Dice [%v]: %v", pattern, d.Roll()),
 	}
 
-	return res
+	return res, nil
 }
