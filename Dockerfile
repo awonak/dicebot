@@ -6,7 +6,6 @@ WORKDIR /go/src/dicebot
 ADD . /go/src/dicebot
 
 # Build & Install the application
-RUN go get
 RUN go install
 
 # Expose the default gin port
