@@ -3,7 +3,7 @@
 package main
 
 import (
-	"dicebot/app"
+	"github.com/awonak/dicebot/app"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/middleware"
 )
