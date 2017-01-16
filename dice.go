@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/awonak/dicebot/app"
-	"github.com/awonak/dicebot/dice"
+	"dicebot/app"
+	"dicebot/dice"
 	"github.com/goadesign/goa"
 )
 
