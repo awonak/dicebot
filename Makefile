@@ -5,7 +5,7 @@ NAME=dicebot
 GCR_TAG=gcr.io/${PROJECT_ID}/$(NAME)
 
 # Container Version
-VERSION=v1
+VERSION=$(shell git describe --tags)
 
 
 ## Run the goagen command to generate application files from DSL.
@@ -30,10 +30,16 @@ cleanup:
 	docker rm $(NAME)
 
 ## Publish container to GCP Repository
-push:
+push: build
 	gcloud docker -- push $(GCR_TAG):$(VERSION)
 
 ## Create a Kubernetes pod for deploying the container to
 createpod:
 	kubectl run $(NAME) --image=$(GCR_TAG):$(VERSION) --port=8080
 
+## Update the version on GCP
+deploy:
+	kubectl set image deployment/$(NAME) $(NAME)=$(GCR_TAG):$(VERSION)
+
+stats:
+	kubectl get services $(NAME)
