@@ -11,9 +11,9 @@
 package cli
 
 import (
-	"dicebot/client"
 	"encoding/json"
 	"fmt"
+	"github.com/awonak/dicebot/client"
 	"github.com/goadesign/goa"
 	goaclient "github.com/goadesign/goa/client"
 	uuid "github.com/goadesign/goa/uuid"

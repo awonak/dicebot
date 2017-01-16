@@ -1,5 +1,5 @@
 {
-	"ImportPath": "dicebot",
+	"ImportPath": "github.com/awonak/dicebot",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v77",
 	"Packages": [

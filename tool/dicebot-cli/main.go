@@ -1,9 +1,9 @@
 package main
 
 import (
-	"dicebot/client"
-	"dicebot/tool/cli"
 	"fmt"
+	"github.com/awonak/dicebot/client"
+	"github.com/awonak/dicebot/tool/cli"
 	goaclient "github.com/goadesign/goa/client"
 	"github.com/spf13/cobra"
 	"net/http"

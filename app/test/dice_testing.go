@@ -12,8 +12,8 @@ package test
 
 import (
 	"bytes"
-	"dicebot/app"
 	"fmt"
+	"github.com/awonak/dicebot/app"
 	"github.com/goadesign/goa"
 	"github.com/goadesign/goa/goatest"
 	"golang.org/x/net/context"
