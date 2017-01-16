@@ -9,3 +9,130 @@
 // The content of this file is auto-generated, DO NOT MODIFY
 
 package app
+
+import (
+	"github.com/goadesign/goa"
+	"unicode/utf8"
+)
+
+// diceRollPayload user type.
+type diceRollPayload struct {
+	// Number of dice to roll
+	NumDice *int `form:"numDice,omitempty" json:"numDice,omitempty" xml:"numDice,omitempty"`
+	// Name of thingy
+	Pattern *string `form:"pattern,omitempty" json:"pattern,omitempty" xml:"pattern,omitempty"`
+	// The value of a roll for given pattern
+	Roll *int `form:"roll,omitempty" json:"roll,omitempty" xml:"roll,omitempty"`
+	// Number of sides on the dice
+	Sides *int `form:"sides,omitempty" json:"sides,omitempty" xml:"sides,omitempty"`
+}
+
+// Validate validates the diceRollPayload type instance.
+func (ut *diceRollPayload) Validate() (err error) {
+	if ut.Pattern == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "pattern"))
+	}
+	if ut.NumDice != nil {
+		if *ut.NumDice < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *ut.NumDice, 1, true))
+		}
+	}
+	if ut.NumDice != nil {
+		if *ut.NumDice > 6 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *ut.NumDice, 6, false))
+		}
+	}
+	if ut.Pattern != nil {
+		if ok := goa.ValidatePattern(`^(\d+)d(\d+)$`, *ut.Pattern); !ok {
+			err = goa.MergeErrors(err, goa.InvalidPatternError(`response.pattern`, *ut.Pattern, `^(\d+)d(\d+)$`))
+		}
+	}
+	if ut.Pattern != nil {
+		if utf8.RuneCountInString(*ut.Pattern) < 3 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, *ut.Pattern, utf8.RuneCountInString(*ut.Pattern), 3, true))
+		}
+	}
+	if ut.Pattern != nil {
+		if utf8.RuneCountInString(*ut.Pattern) > 6 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, *ut.Pattern, utf8.RuneCountInString(*ut.Pattern), 6, false))
+		}
+	}
+	if ut.Sides != nil {
+		if *ut.Sides < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *ut.Sides, 1, true))
+		}
+	}
+	if ut.Sides != nil {
+		if *ut.Sides > 100 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *ut.Sides, 100, false))
+		}
+	}
+	return
+}
+
+// Publicize creates DiceRollPayload from diceRollPayload
+func (ut *diceRollPayload) Publicize() *DiceRollPayload {
+	var pub DiceRollPayload
+	if ut.NumDice != nil {
+		pub.NumDice = ut.NumDice
+	}
+	if ut.Pattern != nil {
+		pub.Pattern = *ut.Pattern
+	}
+	if ut.Roll != nil {
+		pub.Roll = ut.Roll
+	}
+	if ut.Sides != nil {
+		pub.Sides = ut.Sides
+	}
+	return &pub
+}
+
+// DiceRollPayload user type.
+type DiceRollPayload struct {
+	// Number of dice to roll
+	NumDice *int `form:"numDice,omitempty" json:"numDice,omitempty" xml:"numDice,omitempty"`
+	// Name of thingy
+	Pattern string `form:"pattern" json:"pattern" xml:"pattern"`
+	// The value of a roll for given pattern
+	Roll *int `form:"roll,omitempty" json:"roll,omitempty" xml:"roll,omitempty"`
+	// Number of sides on the dice
+	Sides *int `form:"sides,omitempty" json:"sides,omitempty" xml:"sides,omitempty"`
+}
+
+// Validate validates the DiceRollPayload type instance.
+func (ut *DiceRollPayload) Validate() (err error) {
+	if ut.Pattern == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "pattern"))
+	}
+	if ut.NumDice != nil {
+		if *ut.NumDice < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *ut.NumDice, 1, true))
+		}
+	}
+	if ut.NumDice != nil {
+		if *ut.NumDice > 6 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *ut.NumDice, 6, false))
+		}
+	}
+	if ok := goa.ValidatePattern(`^(\d+)d(\d+)$`, ut.Pattern); !ok {
+		err = goa.MergeErrors(err, goa.InvalidPatternError(`response.pattern`, ut.Pattern, `^(\d+)d(\d+)$`))
+	}
+	if utf8.RuneCountInString(ut.Pattern) < 3 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, ut.Pattern, utf8.RuneCountInString(ut.Pattern), 3, true))
+	}
+	if utf8.RuneCountInString(ut.Pattern) > 6 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, ut.Pattern, utf8.RuneCountInString(ut.Pattern), 6, false))
+	}
+	if ut.Sides != nil {
+		if *ut.Sides < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *ut.Sides, 1, true))
+		}
+	}
+	if ut.Sides != nil {
+		if *ut.Sides > 100 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *ut.Sides, 100, false))
+		}
+	}
+	return
+}

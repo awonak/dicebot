@@ -55,8 +55,8 @@ func MountDiceController(service *goa.Service, ctrl DiceController) {
 		}
 		return ctrl.Index(rctx)
 	}
-	service.Mux.Handle("GET", "/:rollPattern", ctrl.MuxHandler("Index", h, nil))
-	service.LogInfo("mount", "ctrl", "Dice", "action", "Index", "route", "GET /:rollPattern")
+	service.Mux.Handle("GET", "/:pattern", ctrl.MuxHandler("Index", h, nil))
+	service.LogInfo("mount", "ctrl", "Dice", "action", "Index", "route", "GET /:pattern")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -70,7 +70,7 @@ func MountDiceController(service *goa.Service, ctrl DiceController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*RollDicePayload)
+			rctx.Payload = rawPayload.(*DiceRollPayload)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -82,7 +82,7 @@ func MountDiceController(service *goa.Service, ctrl DiceController) {
 
 // unmarshalRollDicePayload unmarshals the request body into the context request data Payload field.
 func unmarshalRollDicePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &rollDicePayload{}
+	payload := &diceRollPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

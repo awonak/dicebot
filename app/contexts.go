@@ -13,6 +13,7 @@ package app
 import (
 	"github.com/goadesign/goa"
 	"golang.org/x/net/context"
+	"unicode/utf8"
 )
 
 // IndexDiceContext provides the dice index action context.
@@ -20,7 +21,7 @@ type IndexDiceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	RollPattern string
+	Pattern string
 }
 
 // NewIndexDiceContext parses the incoming request URL and body, performs validations and creates the
@@ -31,24 +32,39 @@ func NewIndexDiceContext(ctx context.Context, service *goa.Service) (*IndexDiceC
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	rctx := IndexDiceContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramRollPattern := req.Params["rollPattern"]
-	if len(paramRollPattern) > 0 {
-		rawRollPattern := paramRollPattern[0]
-		rctx.RollPattern = rawRollPattern
+	paramPattern := req.Params["pattern"]
+	if len(paramPattern) > 0 {
+		rawPattern := paramPattern[0]
+		rctx.Pattern = rawPattern
+		if ok := goa.ValidatePattern(`^(\d+)d(\d+)$`, rctx.Pattern); !ok {
+			err = goa.MergeErrors(err, goa.InvalidPatternError(`pattern`, rctx.Pattern, `^(\d+)d(\d+)$`))
+		}
+		if utf8.RuneCountInString(rctx.Pattern) < 3 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`pattern`, rctx.Pattern, utf8.RuneCountInString(rctx.Pattern), 3, true))
+		}
+		if utf8.RuneCountInString(rctx.Pattern) > 6 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`pattern`, rctx.Pattern, utf8.RuneCountInString(rctx.Pattern), 6, false))
+		}
 	}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
 func (ctx *IndexDiceContext) OK(r *GoaDiceroll) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.diceroll+json")
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKRoll sends a HTTP response with status code 200.
+func (ctx *IndexDiceContext) OKRoll(r *GoaDicerollRoll) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *IndexDiceContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+func (ctx *IndexDiceContext) BadRequest() error {
+	ctx.ResponseData.WriteHeader(400)
+	return nil
 }
 
 // NotFound sends a HTTP response with status code 404.
@@ -62,7 +78,7 @@ type RollDiceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Payload *RollDicePayload
+	Payload *DiceRollPayload
 }
 
 // NewRollDiceContext parses the incoming request URL and body, performs validations and creates the
@@ -76,53 +92,22 @@ func NewRollDiceContext(ctx context.Context, service *goa.Service) (*RollDiceCon
 	return &rctx, err
 }
 
-// rollDicePayload is the dice roll action payload.
-type rollDicePayload struct {
-	// Roll response text
-	Text *string `form:"text,omitempty" json:"text,omitempty" xml:"text,omitempty"`
-}
-
-// Validate runs the validation rules defined in the design.
-func (payload *rollDicePayload) Validate() (err error) {
-	if payload.Text == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "text"))
-	}
-	return
-}
-
-// Publicize creates RollDicePayload from rollDicePayload
-func (payload *rollDicePayload) Publicize() *RollDicePayload {
-	var pub RollDicePayload
-	if payload.Text != nil {
-		pub.Text = *payload.Text
-	}
-	return &pub
-}
-
-// RollDicePayload is the dice roll action payload.
-type RollDicePayload struct {
-	// Roll response text
-	Text string `form:"text" json:"text" xml:"text"`
-}
-
-// Validate runs the validation rules defined in the design.
-func (payload *RollDicePayload) Validate() (err error) {
-	if payload.Text == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "text"))
-	}
-	return
-}
-
 // OK sends a HTTP response with status code 200.
 func (ctx *RollDiceContext) OK(r *GoaDiceroll) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.diceroll+json")
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// OKRoll sends a HTTP response with status code 200.
+func (ctx *RollDiceContext) OKRoll(r *GoaDicerollRoll) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *RollDiceContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+func (ctx *RollDiceContext) BadRequest() error {
+	ctx.ResponseData.WriteHeader(400)
+	return nil
 }
 
 // NotFound sends a HTTP response with status code 404.

@@ -19,11 +19,11 @@ build:
 
 ## Run the test suite inside the docker container
 test: build
-	docker run --name $(NAME)-test --rm $(NAME) go test -v -race ./...
+	docker run --name $(NAME)-test --rm $(NAME) go test -v ./...
 
 ## Build and run the application using ENV_FILE for configuration.
-run: build
-	docker run -d -p 8080:8080 --name $(NAME) $(GCR_TAG):$(VERSION)
+run: cleanup build
+	docker run -it -p 8080:8080 --name $(NAME) $(GCR_TAG):$(VERSION)
 
 ## Clean up the existing container reference if it exists
 cleanup:

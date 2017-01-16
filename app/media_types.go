@@ -10,20 +10,69 @@
 
 package app
 
-import "github.com/goadesign/goa"
+import (
+	"github.com/goadesign/goa"
+	"unicode/utf8"
+)
 
 // Roll response message (default view)
 //
-// Identifier: application/vnd.goa.diceroll+json; view=default
+// Identifier: application/vnd.goa.diceroll; view=default
 type GoaDiceroll struct {
-	// Roll response text
-	Text string `form:"text" json:"text" xml:"text"`
+	// Number of dice to roll
+	NumDice *int `form:"numDice,omitempty" json:"numDice,omitempty" xml:"numDice,omitempty"`
+	// Name of thingy
+	Pattern *string `form:"pattern,omitempty" json:"pattern,omitempty" xml:"pattern,omitempty"`
+	// The value of a roll for given pattern
+	Roll *int `form:"roll,omitempty" json:"roll,omitempty" xml:"roll,omitempty"`
+	// Number of sides on the dice
+	Sides *int `form:"sides,omitempty" json:"sides,omitempty" xml:"sides,omitempty"`
 }
 
 // Validate validates the GoaDiceroll media type instance.
 func (mt *GoaDiceroll) Validate() (err error) {
-	if mt.Text == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "text"))
+	if mt.NumDice != nil {
+		if *mt.NumDice < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *mt.NumDice, 1, true))
+		}
+	}
+	if mt.NumDice != nil {
+		if *mt.NumDice > 6 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.numDice`, *mt.NumDice, 6, false))
+		}
+	}
+	if mt.Pattern != nil {
+		if ok := goa.ValidatePattern(`^(\d+)d(\d+)$`, *mt.Pattern); !ok {
+			err = goa.MergeErrors(err, goa.InvalidPatternError(`response.pattern`, *mt.Pattern, `^(\d+)d(\d+)$`))
+		}
+	}
+	if mt.Pattern != nil {
+		if utf8.RuneCountInString(*mt.Pattern) < 3 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, *mt.Pattern, utf8.RuneCountInString(*mt.Pattern), 3, true))
+		}
+	}
+	if mt.Pattern != nil {
+		if utf8.RuneCountInString(*mt.Pattern) > 6 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`response.pattern`, *mt.Pattern, utf8.RuneCountInString(*mt.Pattern), 6, false))
+		}
+	}
+	if mt.Sides != nil {
+		if *mt.Sides < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *mt.Sides, 1, true))
+		}
+	}
+	if mt.Sides != nil {
+		if *mt.Sides > 100 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.sides`, *mt.Sides, 100, false))
+		}
 	}
 	return
+}
+
+// Roll response message (roll view)
+//
+// Identifier: application/vnd.goa.diceroll; view=roll
+type GoaDicerollRoll struct {
+	// The value of a roll for given pattern
+	Roll *int `form:"roll,omitempty" json:"roll,omitempty" xml:"roll,omitempty"`
 }

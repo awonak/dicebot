@@ -11,6 +11,8 @@ import (
 
 var (
 	// Dice config
+	DICE_PATTERN = "^(\\d+)d(\\d+)$"
+
 	MIN_DICE  = 1
 	MAX_DICE  = 6
 	MIN_SIDES = 3
@@ -23,6 +25,7 @@ var (
 )
 
 type DiceRoll struct {
+	Pattern string
 	NumDice int
 	Sides   int
 	seed    int64
@@ -34,7 +37,7 @@ func NewDiceRoll(pattern string) (*DiceRoll, error) {
 
 func NewDiceRollWithSeed(pattern string, seed int64) (*DiceRoll, error) {
 	// Parse Pattern regex
-	re := regexp.MustCompile("^(\\d+)d(\\d+)$")
+	re := regexp.MustCompile(DICE_PATTERN)
 	result := re.FindStringSubmatch(pattern)
 
 	if len(result) == 0 {
@@ -60,11 +63,11 @@ func NewDiceRollWithSeed(pattern string, seed int64) (*DiceRoll, error) {
 		return nil, ErrInvalidSides
 	}
 
-	return &DiceRoll{numDice, sides, seed}, nil
+	return &DiceRoll{pattern, numDice, sides, seed}, nil
 }
 
 func (d DiceRoll) String() string {
-	return fmt.Sprintf("%vd%v", d.NumDice, d.Sides)
+	return d.Pattern
 }
 
 func (d DiceRoll) Roll() int {

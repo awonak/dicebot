@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"dicebot/app"
 	"dicebot/dice"
 	"github.com/goadesign/goa"
@@ -21,10 +19,10 @@ func NewDiceController(service *goa.Service) *DiceController {
 // Roll runs the roll action for GET requests.
 func (c *DiceController) Index(ctx *app.IndexDiceContext) error {
 	// Get the dice roll pattern from the request context
-	pattern := ctx.RollPattern
+	pattern := ctx.Pattern
 	res, err := getDiceRollResponse(pattern)
 	if err != nil {
-		return ctx.BadRequest(goa.ErrBadRequest(err))
+		return goa.ErrBadRequest(err)
 	}
 	return ctx.OK(res)
 }
@@ -32,10 +30,10 @@ func (c *DiceController) Index(ctx *app.IndexDiceContext) error {
 // Roll runs the roll action for POST requests.
 func (c *DiceController) Roll(ctx *app.RollDiceContext) error {
 	// Get the dice roll pattern from the request context
-	pattern := ctx.Payload.Text
+	pattern := ctx.Payload.Pattern
 	res, err := getDiceRollResponse(pattern)
 	if err != nil {
-		return ctx.BadRequest(goa.ErrBadRequest(err))
+		return goa.ErrBadRequest(err)
 	}
 	return ctx.OK(res)
 }
@@ -49,8 +47,13 @@ func getDiceRollResponse(pattern string) (*app.GoaDiceroll, error) {
 		return nil, err
 	}
 
+	roll := d.Roll()
+
 	res := &app.GoaDiceroll{
-		Text: fmt.Sprintf("Rolling Dice [%v]: %v", pattern, d.Roll()),
+		Pattern: &d.Pattern,
+		NumDice: &d.NumDice,
+		Sides:   &d.Sides,
+		Roll:    &roll,
 	}
 
 	return res, nil

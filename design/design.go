@@ -6,7 +6,7 @@ import (
 )
 
 var _ = API("dicebot", func() {
-	Title("Dice Roll Chatbot ")
+	Title("Dice Roll Chatbot")
 	Description("A Chatbot for rolling dice")
 	Scheme("http")
 	Host("localhost:8080")
@@ -14,39 +14,64 @@ var _ = API("dicebot", func() {
 
 var _ = Resource("dice", func() {
 	BasePath("/")
-	DefaultMedia(RollMedia)
+	DefaultMedia(DiceRollMedia)
 
 	Action("index", func() {
 		Description("GET landing page")
-		Routing(GET("/:rollPattern"))
+		Routing(GET("/:pattern"))
 		Params(func() {
-			Param("rollPattern", String, "Roll Pattern")
+			Param("pattern")
 		})
 		Response(OK)
-		Response(BadRequest, ErrorMedia)
+		Response(BadRequest)
 		Response(NotFound)
 	})
 
 	Action("roll", func() {
 		Description("Roll the dice")
 		Routing(POST("/"))
-		Payload(func() {
-			Member("text")
-			Required("text")
-		})
+		Payload(DiceRollPayload)
 		Response(OK)
-		Response(BadRequest, ErrorMedia)
+		Response(BadRequest)
 		Response(NotFound)
 	})
 })
 
-var RollMedia = MediaType("application/vnd.goa.diceroll+json", func() {
+var DiceRollPayload = Type("DiceRollPayload", func() {
+	Attribute("pattern", String, "Name of thingy", func() {
+		MinLength(3)
+		MaxLength(6)
+		Pattern("^(\\d+)d(\\d+)$")
+	})
+	Attribute("numDice", Integer, "Number of dice to roll", func() {
+		Minimum(1)
+		Maximum(6)
+	})
+	Attribute("sides", Integer, "Number of sides on the dice", func() {
+		Minimum(1)
+		Maximum(100)
+	})
+	Attribute("roll", Integer, "The value of a roll for given pattern")
+	Required("pattern")
+})
+
+var DiceRollMedia = MediaType("application/vnd.goa.diceroll", func() {
 	Description("Roll response message")
+	ContentType("application/json")
+	Reference(DiceRollPayload)
 	Attributes(func() {
-		Attribute("text", String, "Roll response text")
-		Required("text")
+		Attribute("pattern")
+		Attribute("numDice")
+		Attribute("sides")
+		Attribute("roll")
 	})
 	View("default", func() {
-		Attribute("text")
+		Attribute("pattern")
+		Attribute("numDice")
+		Attribute("sides")
+		Attribute("roll")
+	})
+	View("roll", func() {
+		Attribute("roll")
 	})
 })

@@ -30,8 +30,8 @@ import (
 type (
 	// IndexDiceCommand is the command line data structure for the index action of dice
 	IndexDiceCommand struct {
-		// Roll Pattern
-		RollPattern string
+		// Name of thingy
+		Pattern     string
 		PrettyPrint bool
 	}
 
@@ -52,7 +52,7 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(IndexDiceCommand)
 	sub = &cobra.Command{
-		Use:   `dice ["/ROLLPATTERN"]`,
+		Use:   `dice ["/PATTERN"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -73,7 +73,10 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "text": "Vitae quis placeat cum."
+   "numDice": 1,
+   "pattern": "x0v",
+   "roll": 3761605723347222982,
+   "sides": 79
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -242,7 +245,7 @@ func (cmd *IndexDiceCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/%v", url.QueryEscape(cmd.RollPattern))
+		path = fmt.Sprintf("/%v", url.QueryEscape(cmd.Pattern))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -258,8 +261,8 @@ func (cmd *IndexDiceCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *IndexDiceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var rollPattern string
-	cc.Flags().StringVar(&cmd.RollPattern, "rollPattern", rollPattern, `Roll Pattern`)
+	var pattern string
+	cc.Flags().StringVar(&cmd.Pattern, "pattern", pattern, `Name of thingy`)
 }
 
 // Run makes the HTTP request corresponding to the RollDiceCommand command.
@@ -270,7 +273,7 @@ func (cmd *RollDiceCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = "/"
 	}
-	var payload client.RollDicePayload
+	var payload client.DiceRollPayload
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {

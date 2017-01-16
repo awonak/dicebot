@@ -4,72 +4,79 @@ consumes:
 - application/gob
 - application/x-gob
 definitions:
+  DiceRollPayload:
+    example:
+      numDice: 1
+      pattern: x0v
+      roll: 3.7616058e+18
+      sides: 79
+    properties:
+      numDice:
+        description: Number of dice to roll
+        example: 1
+        maximum: 6
+        minimum: 1
+        type: integer
+      pattern:
+        description: Name of thingy
+        example: x0v
+        maxLength: 6
+        minLength: 3
+        pattern: ^(\d+)d(\d+)$
+        type: string
+      roll:
+        description: The value of a roll for given pattern
+        example: 3.7616058e+18
+        format: int64
+        type: integer
+      sides:
+        description: Number of sides on the dice
+        example: 79
+        maximum: 100
+        minimum: 1
+        type: integer
+    required:
+    - pattern
+    title: DiceRollPayload
+    type: object
   GoaDiceroll:
     description: Roll response message (default view)
     example:
-      text: Eos maxime culpa voluptatem perspiciatis voluptas labore.
+      numDice: 2
+      pattern: dva
+      roll: 3.8734184e+18
+      sides: 7
     properties:
-      text:
-        description: Roll response text
-        example: Eos maxime culpa voluptatem perspiciatis voluptas labore.
+      numDice:
+        description: Number of dice to roll
+        example: 2
+        maximum: 6
+        minimum: 1
+        type: integer
+      pattern:
+        description: Name of thingy
+        example: dva
+        maxLength: 6
+        minLength: 3
+        pattern: ^(\d+)d(\d+)$
         type: string
-    required:
-    - text
-    title: 'Mediatype identifier: application/vnd.goa.diceroll+json; view=default'
-    type: object
-  RollDicePayload:
-    example:
-      text: Vitae quis placeat cum.
-    properties:
-      text:
-        description: Roll response text
-        example: Vitae quis placeat cum.
-        type: string
-    required:
-    - text
-    title: RollDicePayload
-    type: object
-  error:
-    description: Error response media type (default view)
-    example:
-      code: invalid_value
-      detail: Value of ID must be an integer
-      id: 3F1FKVRR
-      meta:
-        timestamp: 1.458609e+09
-      status: "400"
-    properties:
-      code:
-        description: an application-specific error code, expressed as a string value.
-        example: invalid_value
-        type: string
-      detail:
-        description: a human-readable explanation specific to this occurrence of the
-          problem.
-        example: Value of ID must be an integer
-        type: string
-      id:
-        description: a unique identifier for this particular occurrence of the problem.
-        example: 3F1FKVRR
-        type: string
-      meta:
-        additionalProperties: true
-        description: a meta object containing non-standard meta-information about
-          the error.
-        example:
-          timestamp: 1.458609e+09
-        type: object
-      status:
-        description: the HTTP status code applicable to this problem, expressed as
-          a string value.
-        example: "400"
-        type: string
-    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+      roll:
+        description: The value of a roll for given pattern
+        example: 3.8734184e+18
+        format: int64
+        type: integer
+      sides:
+        description: Number of sides on the dice
+        example: 7
+        maximum: 100
+        minimum: 1
+        type: integer
+    title: 'Mediatype identifier: application/vnd.goa.diceroll; view=default'
     type: object
 host: localhost:8080
 info:
   description: A Chatbot for rolling dice
-  title: 'Dice Roll Chatbot '
+  title: Dice Roll Chatbot
   version: ""
 paths:
   /:
@@ -81,7 +88,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/RollDicePayload'
+          $ref: '#/definitions/DiceRollPayload'
       responses:
         "200":
           description: OK
@@ -89,8 +96,6 @@ paths:
             $ref: '#/definitions/GoaDiceroll'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
@@ -98,14 +103,17 @@ paths:
       summary: roll dice
       tags:
       - dice
-  /{rollPattern}:
+  /{pattern}:
     get:
       description: GET landing page
       operationId: dice#index
       parameters:
-      - description: Roll Pattern
+      - description: Name of thingy
         in: path
-        name: rollPattern
+        maxLength: 6
+        minLength: 3
+        name: pattern
+        pattern: ^(\d+)d(\d+)$
         required: true
         type: string
       responses:
@@ -115,8 +123,6 @@ paths:
             $ref: '#/definitions/GoaDiceroll'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
         "404":
           description: Not Found
       schemes:
@@ -130,6 +136,8 @@ produces:
 - application/gob
 - application/x-gob
 responses:
+  BadRequest:
+    description: Bad Request
   NotFound:
     description: Not Found
   OK:

@@ -19,8 +19,8 @@ import (
 )
 
 // IndexDicePath computes a request path to the index action of dice.
-func IndexDicePath(rollPattern string) string {
-	param0 := rollPattern
+func IndexDicePath(pattern string) string {
+	param0 := pattern
 
 	return fmt.Sprintf("/%s", param0)
 }
@@ -48,12 +48,6 @@ func (c *Client) NewIndexDiceRequest(ctx context.Context, path string) (*http.Re
 	return req, nil
 }
 
-// RollDicePayload is the dice roll action payload.
-type RollDicePayload struct {
-	// Roll response text
-	Text string `form:"text" json:"text" xml:"text"`
-}
-
 // RollDicePath computes a request path to the roll action of dice.
 func RollDicePath() string {
 
@@ -61,7 +55,7 @@ func RollDicePath() string {
 }
 
 // Roll the dice
-func (c *Client) RollDice(ctx context.Context, path string, payload *RollDicePayload, contentType string) (*http.Response, error) {
+func (c *Client) RollDice(ctx context.Context, path string, payload *DiceRollPayload, contentType string) (*http.Response, error) {
 	req, err := c.NewRollDiceRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
@@ -70,7 +64,7 @@ func (c *Client) RollDice(ctx context.Context, path string, payload *RollDicePay
 }
 
 // NewRollDiceRequest create the request corresponding to the roll action endpoint of the dice resource.
-func (c *Client) NewRollDiceRequest(ctx context.Context, path string, payload *RollDicePayload, contentType string) (*http.Request, error) {
+func (c *Client) NewRollDiceRequest(ctx context.Context, path string, payload *DiceRollPayload, contentType string) (*http.Request, error) {
 	var body bytes.Buffer
 	if contentType == "" {
 		contentType = "*/*" // Use default encoder
